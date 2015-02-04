@@ -1,0 +1,41 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+
+}
+
+#container {
+    width: 90%;
+    margin: 0 auto;
+    background-color: #F5F6F5;
+}
+
+#header {
+    height: 60px;
+    position: fixed;
+    top: 0px;
+    background-color: #F5F6F5;
+    width: 90%;
+}
+
+#display {
+    margin-top: 60px;
+    min-height: 30px;
+    background-color: #FFF;
+}
+
+#display img {
+
+}
+
+#buttom {
+    height: 30px;
+}
+
+#buttom p {
+    padding: 7px 36%;
+    font-size: 0.7em;
+}
