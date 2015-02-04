@@ -22,6 +22,9 @@ http.createServer(function (req, resp) {
         }
         // 解析到本地路径
         var localPath = __dirname + "/www" + reqUrl;
+        if (reqUrl.indexOf('/picture') == 0) {
+            localPath = common.config.picDir + reqUrl.substr(8);
+        }
         // 设置 Content-Type
         var extName = path.extname(reqUrl);
         var contentType = contentTypes[extName];
