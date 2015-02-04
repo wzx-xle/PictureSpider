@@ -13,6 +13,9 @@ http.createServer(function (req, resp) {
     debugger;
     var reqUrl = req.url;
     if (reqUrl.indexOf('/controller') == 0) {
+        // 过滤掉开头的 /controller 路径
+        req.url = req.url.substr(11);
+        // 调用控制器分发请求
         dispatcher.dispatch(req, resp);
     }
     else {
@@ -29,6 +32,7 @@ http.createServer(function (req, resp) {
         var extName = path.extname(reqUrl);
         var contentType = contentTypes[extName];
 
+        // 读取静态文件
         fs.readFile(localPath, function (err, data) {
             if (err) {
                 console.log('request static file ' + localPath + ' not found.');
