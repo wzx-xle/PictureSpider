@@ -9,7 +9,9 @@ dispatcher.dispatch = function(req, resp) {
     
     console.log('uri:' + uri + '?query:');
     console.log(query);
-    resp.end('uri:' + uri + '?query:' + query);
+    resp.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+    resp.write('uri:' + uri + '?query:' + JSON.stringify(query));
+    resp.end();
 }
 
 module.exports = dispatcher;
