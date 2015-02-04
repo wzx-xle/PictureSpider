@@ -2,9 +2,12 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
+var common = require('../cmn/common');
 var dispatcher = require('./controller/dispatcher');
 
 var contentTypes = require('./contentTypes.json');
+
+var webCfg = common.config.web;
 
 http.createServer(function (req, resp) {
     debugger;
@@ -40,5 +43,6 @@ http.createServer(function (req, resp) {
         });
     }
 })
-.listen(8088);
-console.log('Server running at http://localhost:8088/')
+.listen(webCfg.listen.port, webCfg.listen.host);
+
+console.log('Server running at http://'+ webCfg.listen.host + ':' + webCfg.listen.port + '/')

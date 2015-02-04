@@ -13,5 +13,12 @@
             "haixiuzu",
             "516876"
         ]
+    },
+    
+    "web": {
+        "listen": {
+            "host": "localhost",
+            "port": 8088
+        }
     }
 }
