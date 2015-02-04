@@ -4,4 +4,6 @@ var Common = {};
 Common.config = require('./config.json');
 Common.mysql = require('mysql');
 
+Common.Utils = require('./Utils');
+
 module.exports = Common;

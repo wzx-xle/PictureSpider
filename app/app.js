@@ -1,6 +1,6 @@
 var common = require('../cmn/common');
-var Utils = require('./Utils');
 
+var Utils = common.Utils;
 var config = common.config;
 
 // 小组ID集合
