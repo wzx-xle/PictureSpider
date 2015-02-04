@@ -2,10 +2,11 @@ var http = require('http');
 var fs = require('fs');
 var path = require('path');
 
+var url = require('url');
+
 var common = require('../cmn/common');
 var dispatcher = require('./controller/dispatcher');
-
-var contentTypes = require('./contentTypes.json');
+var mime = require('./mime');
 
 var webCfg = common.config.web;
 
@@ -19,6 +20,7 @@ http.createServer(function (req, resp) {
         dispatcher.dispatch(req, resp);
     }
     else {
+        reqUrl = url.parse(req.url).pathname;
         // 设置默认展示首页
         if (reqUrl.indexOf('/') == 0 && reqUrl.length == 1) {
             reqUrl = '/index.html';
@@ -30,7 +32,8 @@ http.createServer(function (req, resp) {
         }
         // 设置 Content-Type
         var extName = path.extname(reqUrl);
-        var contentType = contentTypes[extName];
+        extName = extName ? extName.slice(1) : 'unknow';
+        var contentType = mime.types[extName] || 'text/plain';
 
         // 读取静态文件
         fs.readFile(localPath, function (err, data) {
