@@ -1,0 +1,17 @@
+{
+    "picDir": "../tmp",
+    
+    "db": {
+        "host": "localhost",
+        "port": "3306",
+        "user": "root",
+        "password": "iflytek"
+    },
+    
+    "app": {
+        "groups": [
+            "haixiuzu",
+            "516876"
+        ]
+    }
+}
