@@ -21,7 +21,13 @@ module.exports = function () {
         }
     };
 
-    this.destry = function () {
-        conn.end();
-    }
+    this.queryAll = function (callback) {
+        conn.query('select * from tags', function (err, res, fields) {
+            console.log(res);
+        });
+    };
+
+    this.destry = function (callback) {
+        conn.end(callback);
+    };
 };

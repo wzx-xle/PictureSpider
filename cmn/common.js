@@ -1,9 +1,9 @@
 // 公共模块对象
-var Common = {};
+var common = {};
 
-Common.config = require('./config.json');
-Common.mysql = require('mysql');
+common.config = require('./config.json');
+common.mysql = require('mysql');
 
-Common.Utils = require('./Utils');
+common.utils = require('./utils');
 
-module.exports = Common;
+module.exports = common;
