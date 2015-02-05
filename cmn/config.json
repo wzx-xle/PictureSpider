@@ -2,6 +2,7 @@
     "picDir": "../tmp",
     
     "db": {
+        "database": "picture_spider",
         "host": "localhost",
         "port": "3306",
         "user": "picture",
