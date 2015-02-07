@@ -4,26 +4,20 @@ module.exports = function () {
     var conn = null;
 
     this.init = function () {
-        conn = common.mysql.createConnection({
-            host: common.config.db.host,
-            port: common.config.db.port,
-            user: common.config.db.user,
-            password: common.config.db.password,
-            database: common.config.db.database
-        });
+        conn = common.mysql.createConnection(common.config.db);
     };
 
     this.tags = {
         queryById: function (id, callback) {
-            conn.query('select * from tags where id=?', [id], function (err, res, fields) {
-                callback(res, res);
+            conn.query('select * from tags where id=?', [id], function (err, rows, fields) {
+                callback(err, rows);
             });
         }
     };
 
     this.queryAll = function (callback) {
-        conn.query('select * from tags', function (err, res, fields) {
-            console.log(res);
+        conn.query('select * from tags', function (err, rows, fields) {
+            console.log(rows);
         });
     };
 

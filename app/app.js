@@ -11,18 +11,18 @@ var model = new Model();
 
 console.time('timer');
 model.init();
-model.tags.queryById(1, function (err, res) {
-    //if (err) throw err;
-    console.log(res);
+model.tags.queryById(4, function (err, rows) {
+    if (err) throw err;
+    console.log(rows);
     console.log('access mysql successful.');
 });
 
 console.timeEnd('timer');
 utils.timer(1000, function () {
     debugger;
-    model.tags.queryById(1, function (err, res) {
+    model.tags.queryById(1, function (err, rows) {
         if (err) throw err;
-        console.log(res);
+        console.log(rows);
         console.log('access mysql successful.');
     });
 
@@ -30,4 +30,4 @@ utils.timer(1000, function () {
     console.time('timer');
 });
 
-model.destry();
+//model.destry();
