@@ -10,7 +10,6 @@ var groups = config.app.groups;
 var model = new Model();
 
 console.time('timer');
-model.init();
 model.tags.queryById(4, function (err, rows) {
     if (err) throw err;
     console.log(rows);
@@ -18,9 +17,9 @@ model.tags.queryById(4, function (err, rows) {
 });
 
 console.timeEnd('timer');
-utils.timer(1000, function () {
+utils.timer(10, function () {
     debugger;
-    model.tags.queryById(1, function (err, rows) {
+    model.tags.queryAll(function (err, rows) {
         if (err) throw err;
         console.log(rows);
         console.log('access mysql successful.');
@@ -29,5 +28,3 @@ utils.timer(1000, function () {
     console.timeEnd('timer');
     console.time('timer');
 });
-
-//model.destry();
