@@ -14,7 +14,12 @@
         "groups": [
             "haixiuzu",
             "516876"
-        ]
+        ],
+        "urlTemplate": {
+            "group": "",
+            "topic": "",
+            "picture": ""
+        }
     },
     
     "web": {
