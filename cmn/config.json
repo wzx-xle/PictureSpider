@@ -15,11 +15,7 @@
             "haixiuzu",
             "516876"
         ],
-        "urlTemplate": {
-            "group": "",
-            "topic": "",
-            "picture": ""
-        }
+        "groupUrlTemplate": "http://www.douban.com/group/{1}/discussion?start={2}"
     },
     
     "web": {
