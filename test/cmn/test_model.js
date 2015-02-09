@@ -6,6 +6,11 @@ model.tags.queryAll(function (err, rows) {
     console.log(rows);
     console.log('access mysql successful.');
 
-    model.destroy();
     console.timeEnd('timer');
+});
+
+process.on('SIGINT', function() {
+    setTimeout(function () {
+        model.destroy();
+    }, 100).unref();
 });
