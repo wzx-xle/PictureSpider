@@ -16,6 +16,13 @@ module.exports = {
             });
         }
     },
+    pictures: {
+        queryAll: function (callback) {
+            pool.query('select * from pictures', function (err, rows, fields) {
+                callback(err, rows);
+            });
+        }
+    },
 
     destroy: function (callback) {
         pool.end(callback);
