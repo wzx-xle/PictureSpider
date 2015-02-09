@@ -43,7 +43,14 @@ utils.timer = function (time, callback) {
     setTimeout(self, time);
 };
 
+// 下面定时器方法的循环参量
 var timeForIndex = 0;
+/**
+ * 定时循环，相当于在for循环中增加sleep方法
+ * @param {Number}   time     每次循环暂停的时间
+ * @param {Array}    params   参数数组
+ * @param {Function} callback 回调函数
+ */
 utils.timerFor = function (time, params, callback) {
     var self = function() {
         callback(params[timeForIndex++]);
