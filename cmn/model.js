@@ -1,8 +1,10 @@
 var common = require('./common');
-module.exports = function () {
-    var pool = common.mysql.createPool(common.config.db);
 
-    this.tags = {
+var pool = common.mysql.createPool(common.config.db);
+
+module.exports = {
+
+    tags: {
         queryById: function (id, callback) {
             pool.query('select * from tags where id=?', [id], function (err, rows, fields) {
                 callback(err, rows);
@@ -13,9 +15,9 @@ module.exports = function () {
                 callback(err, rows);
             });
         }
-    };
+    },
 
-    this.destroy = function (callback) {
+    destroy: function (callback) {
         pool.end(callback);
-    };
+    }
 };

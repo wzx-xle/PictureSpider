@@ -1,12 +1,11 @@
-var Model = require('../../cmn/model');
-
-var model = new Model();
+var model = require('../../cmn/model');
 
 console.time('timer');
-model.tags.queryById(4, function (err, rows) {
+model.tags.queryAll(function (err, rows) {
     if (err) throw err;
     console.log(rows);
     console.log('access mysql successful.');
-});
 
-console.timeEnd('timer');
+    model.destroy();
+    console.timeEnd('timer');
+});
