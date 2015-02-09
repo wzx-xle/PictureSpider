@@ -38,9 +38,21 @@ utils.mkdirsSync = function (dirPath, model, callback) {
 utils.timer = function (time, callback) {
     var self = function() {
         callback();
-        setTimeout(self, time).unref();
+        setTimeout(self, time);
     }
-    setTimeout(self, time).unref();
+    setTimeout(self, time);
+};
+
+var timeForIndex = 0;
+utils.timerFor = function (time, params, callback) {
+    var self = function() {
+        callback(params[timeForIndex++]);
+
+        if (params.length > timeForIndex) {
+            setTimeout(self, time);
+        }
+    }
+    setTimeout(self, time);
 }
 
 module.exports = utils;
