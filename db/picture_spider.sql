@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : mysql_localhost
-Source Server Version : 50534
+Source Server         : localhost_root
+Source Server Version : 50535
 Source Host           : localhost:3306
 Source Database       : picture_spider
 
 Target Server Type    : MYSQL
-Target Server Version : 50534
+Target Server Version : 50535
 File Encoding         : 65001
 
-Date: 2015-02-04 22:11:06
+Date: 2015-02-11 18:27:54
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,17 +21,15 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `pictures`;
 CREATE TABLE `pictures` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `authorId` varchar(255) NOT NULL COMMENT '图片作者ID',
   `topicId` int(10) NOT NULL COMMENT '图片所在帖子的Id',
   `file` varchar(255) NOT NULL COMMENT '图片文件的保存位置，相对路径',
   `laud` smallint(5) unsigned DEFAULT '0' COMMENT '赞的数量',
   `tread` smallint(5) DEFAULT '0' COMMENT '踩的数量',
+  `url` varchar(255) DEFAULT '' COMMENT '图片来源',
+  `isLocal` bit(1) DEFAULT b'1' COMMENT '是否保存在本地，1表示本地，0表示远程',
+  `insertTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片集';
-
--- ----------------------------
--- Records of pictures
--- ----------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8 COMMENT='图片集';
 
 -- ----------------------------
 -- Table structure for `picture_tag`
@@ -42,10 +40,6 @@ CREATE TABLE `picture_tag` (
   `tagId` int(10) NOT NULL DEFAULT '0' COMMENT '标签ID',
   PRIMARY KEY (`pictureId`,`tagId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='保存标签和图片的对应关系';
-
--- ----------------------------
--- Records of picture_tag
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for `rules`
@@ -60,10 +54,6 @@ CREATE TABLE `rules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of rules
--- ----------------------------
-
--- ----------------------------
 -- Table structure for `tags`
 -- ----------------------------
 DROP TABLE IF EXISTS `tags`;
@@ -71,11 +61,7 @@ CREATE TABLE `tags` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '标签的唯一ID',
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='标签表';
-
--- ----------------------------
--- Records of tags
--- ----------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='标签表';
 
 -- ----------------------------
 -- Table structure for `topics`
@@ -85,9 +71,6 @@ CREATE TABLE `topics` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL COMMENT '帖子的标题',
   `url` varchar(255) NOT NULL COMMENT '帖子的URL',
+  `authorId` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='帖子集合';
-
--- ----------------------------
--- Records of topics
--- ----------------------------
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8 COMMENT='帖子集合';

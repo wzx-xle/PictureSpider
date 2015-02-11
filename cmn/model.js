@@ -21,6 +21,19 @@ module.exports = {
             pool.query('select * from pictures', function (err, rows, fields) {
                 callback(err, rows);
             });
+        },
+        insert: function (model, callback) {
+            pool.query('insert into pictures set ?', model, function (err, rows, fields) {
+                callback(err, rows);
+            });
+        }
+    },
+
+    topics: {
+        insert: function (model, callback) {
+            pool.query('insert into topics set ?', model, function (err, rows, fields) {
+                callback(err, rows);
+            });
         }
     },
 

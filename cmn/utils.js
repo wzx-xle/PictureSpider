@@ -9,15 +9,11 @@ var utils = {};
  * @param {Number}   model    目录权限，默认0777
  */
 utils.mkdirsSync = function (dirPath, model) {
+    debugger;
     if (!fs.existsSync(dirPath)) {
         var parentDir = path.dirname(dirPath);
-        if (fs.existsSync(parentDir)) {
-            fs.mkdirSync(dirPath, model);
-        } else {
-            Utils.mkdirs(parentDir, model, function (err) {
-                fs.mkdirSync(dirPath, model);
-            });
-        }
+        utils.mkdirsSync(parentDir, model);
+        fs.mkdirSync(dirPath, model);
     }
 };
 
@@ -31,8 +27,9 @@ utils.getFilesSync = function (dir) {
     if (fs.existsSync(dir)) {
         var files = fs.readdirSync(dir);
         for (var i = 0; i < files.length; i++) {
-            if (fs.statSync(files[i]).isFile()) {
-                res.push(files[i]);
+            var file = path.join(dir, files[i]);
+            if (fs.statSync(file).isFile()) {
+                res.push(file);
             }
         }
     }
@@ -125,7 +122,7 @@ utils.date2str = function (date) {
         date = new Date();
     }
 
-    var year = date.getFullYear();
+    var year = date.getFullYear() + '';
 
     var month = date.getMonth() + 1;
     month = month < 10 ? '0' + month : month;
