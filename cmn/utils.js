@@ -91,4 +91,31 @@ utils.timerFor = function (time, params, callback) {
     self();
 }
 
+/**
+ * 复制对象，深拷贝
+ * @param   {Object} srcObj 被拷贝的对象
+ * @returns {Object} 拷贝出来的对象
+ */
+utils.clone = function (srcObj) {
+    var buf;
+    if (srcObj instanceof Array) {
+        buf = [];
+        var i = srcObj.length;
+        while (i--) {
+            buf[i] = utils.clone(srcObj[i]);
+        }
+        return buf;
+    }
+    else if (srcObj instanceof Object) {
+        buf = {};
+        for (var k in srcObj) {
+            buf[k] = utils.clone(srcObj[k]);
+        }
+        return buf;
+    }
+    else {
+        return srcObj;
+    }
+}
+
 module.exports = utils;
