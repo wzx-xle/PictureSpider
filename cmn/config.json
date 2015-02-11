@@ -1,25 +1,32 @@
 {
     "picDir": "../tmp",
-    
+
     "db": {
-        "connectionLimit" : 15,
+        "connectionLimit": 15,
         "database": "picture_spider",
         "host": "localhost",
         "port": "3306",
         "user": "picture",
         "password": "1234!@#$"
     },
-    
+
     "app": {
         "groups": [
             "haixiuzu",
             "516876"
         ],
         "groupUrlTemplate": "http://www.douban.com/group/{1}/discussion?start={2}",
-        "groupReferer": "http://www.douban.com/group/{1}/",
-        "maxPage": 2
+        "groupReferer": "http://www.douban.com/group/{1}/discussion?start=50",
+        "maxPage": 2,
+        "browserCommonHeader": {
+            "Cache_Control": "max-age=0",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "User_Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+            "Accept_Encoding": "gzip, deflate, sdch",
+            "Accept_Language": "zh-CN,zh;q=0.8"
+        }
     },
-    
+
     "web": {
         "listen": {
             "host": "0.0.0.0",

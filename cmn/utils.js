@@ -27,16 +27,12 @@ utils.mkdirsSync = function (dirPath, model) {
  * @param {Array}  文件数组
  */
 utils.getFilesSync = function (dir) {
-    if (!dir) {
-        dir = __dirname;
-    }
-
     var res = [];
     if (fs.existsSync(dir)) {
         var files = fs.readdirSync(dir);
         for (var i = 0; i < files.length; i++) {
-            if (fs.statSync(files).isFile()) {
-                res.push(files);
+            if (fs.statSync(files[i]).isFile()) {
+                res.push(files[i]);
             }
         }
     }
