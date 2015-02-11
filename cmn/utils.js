@@ -86,7 +86,7 @@ utils.timerFor = function (time, params, callback) {
     };
     
     self();
-}
+};
 
 /**
  * 复制对象，深拷贝
@@ -113,6 +113,27 @@ utils.clone = function (srcObj) {
     else {
         return srcObj;
     }
+};
+
+/**
+ * 将日期转换为字符串 yyyyMMdd
+ * @param   {Object} date 日期对象，不传或null，使用当天日期
+ * @returns {String} 日期字符串 20130103
+ */
+utils.date2str = function (date) {
+    if (!date) {
+        date = new Date();
+    }
+
+    var year = date.getFullYear();
+
+    var month = date.getMonth() + 1;
+    month = month < 10 ? '0' + month : month;
+
+    var day = date.getDate();
+    day = day < 10 ? '0' + day : day;
+
+    return year + month + day;
 }
 
 module.exports = utils;
