@@ -145,4 +145,30 @@ utils.getClientIp = function (req) {
         req.connection.socket.remoteAddress;
 };
 
+/**
+ * 校验给定字符串是否满足规则，type=1的规则间为或关系，type=0的规则与type=1的规则与关系
+ * @param {String} data  被校验的字符串
+ * @param {Array}  rules 规则集合，集合对象包含两个属性，rule:{正则表达式}, type:{0表示非|1表示存在}
+ */
+utils.checkRule = function (data, rules) {
+    if (rules.length == 0) {
+        return true;
+    }
+    debugger;
+    var isMatch = false;
+    // 校验每一个规则
+    for (var i in rules) {
+        if (data.match(rules[i].rule)) {
+            if (rules[i].type == 0) {
+                return false;
+            }
+            else {
+                isMatch = true;
+            }
+        }
+    }
+
+    return isMatch;
+}
+
 module.exports = utils;

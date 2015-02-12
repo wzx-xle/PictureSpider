@@ -1,9 +1,20 @@
-var common = require('./common');
+var config = require('./config.json');
+var mysql = require('mysql');
 
-var pool = common.mysql.createPool(common.config.db);
+var pool = mysql.createPool(config.db);
+
+// 查询格式处理，支持直接写对象
+pool.config.connectionConfig.queryFormat = function (query, values) {
+    if (!values) return query;
+    return query.replace(/\:(\w+)/g, function (txt, key) {
+        if (values.hasOwnProperty(key)) {
+            return this.escape(values[key]);
+        }
+        return txt;
+    }.bind(this));
+};
 
 module.exports = {
-
     tags: {
         queryById: function (id, callback) {
             pool.query('select * from tags where id=?', [id], function (err, rows, fields) {
@@ -23,18 +34,13 @@ module.exports = {
             });
         },
         queryPage: function (query, callback) {
-            var sql = 'SELECT * FROM pictures WHERE id <= ? ORDER BY id DESC LIMIT ?';
+            var sql = 'SELECT * FROM pictures WHERE id <= :startId ORDER BY id DESC LIMIT :limit';
             var params = [];
             if (!query.startId) {
-                sql = 'SELECT * FROM pictures WHERE id <= (select max(id) from pictures) ORDER BY id DESC LIMIT ?';
-                params.push(parseInt(query.limit));
-            }
-            else {
-                params.push(parseInt(query.startId));
-                params.push(parseInt(query.limit));
+                sql = 'SELECT * FROM pictures WHERE id <= (select max(id) from pictures) ORDER BY id DESC LIMIT :limit';
             }
 
-            pool.query(sql, params, function (err, rows, fields) {
+            pool.query(sql, query, function (err, rows, fields) {
                 callback(err, rows);
             });
         },
@@ -48,6 +54,17 @@ module.exports = {
     topics: {
         insert: function (model, callback) {
             pool.query('insert into topics set ?', model, function (err, rows, fields) {
+                callback(err, rows);
+            });
+        }
+    },
+
+    rules: {
+        queryByName: function (query, callback) {
+
+        },
+        queryAll: function (callback) {
+            pool.query('SELECT * FROM rules', function (err, rows, fields) {
                 callback(err, rows);
             });
         }

@@ -1,12 +1,11 @@
 var queryStr = require('querystring');
-var fs = require('fs');
 
 var url = require('url');
 
 var common = require('../../cmn/common');
-var model = require('../../cmn/model');
 var error = require('./error');
 
+var model = common.model;
 var dispatcher = {};
 
 dispatcher.dispatch = function (req, resp) {
@@ -25,8 +24,8 @@ dispatcher.dispatch = function (req, resp) {
         case '/getPictures':
             var rootUrl = '/picture/';
             var params = {};
-            params['startId'] = query['startId'] ? query['startId'] : '';
-            params['limit'] = query['limit'] ? query['limit'] : 10;
+            params['startId'] = query['startId'] ? parseInt(query['startId']) : null;
+            params['limit'] = query['limit'] ? parseInt(query['limit']) : 10;
 
             model.pictures.queryPage(params, function (err, rows) {
                 for (var i in rows) {
@@ -47,7 +46,6 @@ var end = function (resp, content) {
         'Content-Type': 'text/json; charset=utf-8'
     });
     var respContent = JSON.stringify(content);
-    console.log('resp:' + respContent);
     resp.end(respContent);
 };
 

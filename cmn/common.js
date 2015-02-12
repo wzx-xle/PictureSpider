@@ -2,8 +2,7 @@
 var common = {};
 
 common.config = require('./config.json');
-common.mysql = require('mysql');
-
 common.utils = require('./utils');
+common.model = require('./model');
 
 module.exports = common;
