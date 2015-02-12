@@ -5,19 +5,71 @@ var path = require('path');
 var url = require('url');
 
 var common = require('../cmn/common');
+var model = common.model;
+var utils = common.utils;
 var dispatcher = require('./controller/dispatcher');
 var error = require('./controller/error');
 var mime = require('./mime');
 
 var webCfg = common.config.web;
 
-http.createServer(function (req, resp) {
-    debugger;
-    console.log('request ' +
-                req.method + ' ' +
-                common.utils.getClientIp(req) + ' ' +
-                req.url);
+// 过滤规则
+var rules = {
+    ip: [],
+    topic: []
+};
 
+/**
+ * 初始化规则集合
+ * @param {Function} callback 初始化完成后触发
+ */
+var updateRules = function (callback) {
+    // 查询数据的规则集合
+    model.rules.queryAll(function (err, rows) {
+        if (err)
+            console.error(err);
+
+        var tmp_ip = [];
+        var tmp_topic = [];
+
+        // 初始化规则列表
+        for (var i in rows) {
+            var row = rows[i];
+            var rule = {
+                rule: row['rule'],
+                type: row['type']
+            };
+            if (row.name == 'ip') {
+                tmp_ip.push(rule);
+            } else if (row.name == 'topic') {
+                tmp_topic.push(rule);
+            }
+        }
+
+        rules.ip = tmp_ip;
+        rules.topic = tmp_topic;
+
+        if (callback) {
+            callback();
+        }
+    });
+};
+
+/**
+ * HTTP服务器请求处理
+ * @param {Object} req  请求对象
+ * @param {Object} resp 响应对象
+ */
+var httpServer = function (req, resp) {
+    debugger;
+    var clientIp = utils.getClientIp(req);
+    console.log('request ' + req.method + ' ' + clientIp + ' ' + req.url);
+
+    // 检查IP地址是否在许可集合中
+    if (!utils.checkRule(clientIp, rules.ip)) {
+        error.e403(resp);
+        return;
+    }
     var reqUrl = req.url;
     if (reqUrl.indexOf('/controller') == 0) {
         // 过滤掉开头的 /controller 路径
@@ -53,7 +105,18 @@ http.createServer(function (req, resp) {
             resp.end(data);
         });
     }
-})
-.listen(webCfg.listen.port, webCfg.listen.host);
+};
 
-console.log('Server running at http://'+ webCfg.listen.host + ':' + webCfg.listen.port + '/')
+/**
+ * 启动HTTP服务器
+ */
+var runServer = function () {
+    http.createServer(httpServer).listen(webCfg.listen.port, webCfg.listen.host);
+    console.log('Server running at http://'+ webCfg.listen.host + ':' + webCfg.listen.port + '/')
+};
+
+// 初始化规则后启动HTTP服务器
+updateRules(runServer);
+
+// 定时更新规则
+utils.timer(1000 * 10, updateRules);

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50535
 File Encoding         : 65001
 
-Date: 2015-02-11 18:27:54
+Date: 2015-02-12 14:52:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,7 +26,7 @@ CREATE TABLE `pictures` (
   `laud` smallint(5) unsigned DEFAULT '0' COMMENT '赞的数量',
   `tread` smallint(5) DEFAULT '0' COMMENT '踩的数量',
   `url` varchar(255) DEFAULT '' COMMENT '图片来源',
-  `isLocal` bit(1) DEFAULT b'1' COMMENT '是否保存在本地，1表示本地，0表示远程',
+  `isLocal` tinyint(1) DEFAULT '1' COMMENT '是否保存在本地，1表示本地，0表示远程',
   `insertTime` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '插入时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8 COMMENT='图片集';
@@ -47,11 +47,17 @@ CREATE TABLE `picture_tag` (
 DROP TABLE IF EXISTS `rules`;
 CREATE TABLE `rules` (
   `id` int(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '唯一标识符，自增',
-  `ruleName` varchar(20) NOT NULL COMMENT '规则名称，显示用',
+  `name` varchar(20) NOT NULL COMMENT '规则名称，显示用，可重复',
   `rule` varchar(100) NOT NULL COMMENT '具体规则，也就是正则表达式',
-  `ruleType` bit(1) NOT NULL COMMENT '规则类型，必须包含为0，不能包含1',
+  `type` tinyint(1) DEFAULT '0' COMMENT '规则类型，0表示不能存在，1表示存在',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of rules
+-- ----------------------------
+INSERT INTO `rules` VALUES ('1', 'ip', '127.0.0.1', '1');
+INSERT INTO `rules` VALUES ('2', 'ip', 'localhost', '1');
 
 -- ----------------------------
 -- Table structure for `tags`
