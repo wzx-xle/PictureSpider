@@ -17,19 +17,40 @@ page.event.onPageLoad = function () {
     page.view.addPicture();
 };
 
-page.view.addPicture = function () {
-    page.model.getJSON('/controller/getPictures', function (data) {
+page.view.addPicture = function (limit, startId) {
+    var url = '/controller/getPictures?limit=';
+    if (limit) {
+        url += 'limit=' + limit;
+    }
+    if (startId) {
+        url += '&startId=' + startId;
+    }
+
+    page.model.getJSON(url, function (data) {
         if (data.status == 0) {
             var pictures = data.pictures;
             var display = document.getElementById('display');
             for (var i in pictures) {
-                var p = pictures[i];
+                var src = pictures[i].file;
                 var img = document.createElement('img');
-                img.setAttribute('src', p.file);
+                img.setAttribute('src', src);
                 display.appendChild(img);
             }
+            page.attr['lastPictureId'] = pictures.pop().id;
         }
     });
+}
+
+page.event.onClickTop = function () {
+
+}
+
+page.event.onClickNext = function () {
+
+}
+
+page.event.onMouseOverNav = function () {
+
 }
 
 page.model.getJSON = function (url, succ, fail) {

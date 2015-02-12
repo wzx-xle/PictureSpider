@@ -18,9 +18,11 @@
     background-color: #FFF;
 }
 
-#display img {}
+#display img {
 
-#controller {
+}
+
+#navigateBar {
     position: fixed;
     bottom: 18px;
     left: 5px;
@@ -35,14 +37,14 @@
     user-select: none;
 }
 
-#controller div {
+#navigateBar div {
     margin: 9px 6px;
     padding: 5px 5px;
     cursor: pointer;
     color: white;
 }
 
-#controller .top {
+#navigateBar .top {
     background-color: gray;
 }
 
