@@ -131,6 +131,18 @@ utils.date2str = function (date) {
     day = day < 10 ? '0' + day : day;
 
     return year + month + day;
-}
+};
+
+/**
+ * 获取客户端IP地址
+ * @param   {Object} req 请求对象
+ * @returns {String} IP地址
+ */
+utils.getClientIp = function (req) {
+    return req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+};
 
 module.exports = utils;

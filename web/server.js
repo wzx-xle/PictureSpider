@@ -6,12 +6,18 @@ var url = require('url');
 
 var common = require('../cmn/common');
 var dispatcher = require('./controller/dispatcher');
+var error = require('./controller/error');
 var mime = require('./mime');
 
 var webCfg = common.config.web;
 
 http.createServer(function (req, resp) {
     debugger;
+    console.log('request ' +
+                req.method + ' ' +
+                common.utils.getClientIp(req) + ' ' +
+                req.url);
+
     var reqUrl = req.url;
     if (reqUrl.indexOf('/controller') == 0) {
         // 过滤掉开头的 /controller 路径
@@ -39,14 +45,9 @@ http.createServer(function (req, resp) {
         fs.readFile(localPath, function (err, data) {
             if (err) {
                 console.log('request static file ' + localPath + ' not found.');
-
-                resp.writeHead('404', {'Content-Type': 'text/html'});
-                fs.readFile(__dirname + '/www/view/err/404.html', function (err, data) {
-                    resp.end(data);
-                })
+                error.e404(resp);
                 return;
             }
-            console.log('request static file ' + localPath + ' successful.');
 
             resp.writeHead('200', {'Content-Type': contentType});
             resp.end(data);
