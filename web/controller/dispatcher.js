@@ -5,6 +5,7 @@ var url = require('url');
 
 var common = require('../../cmn/common');
 var model = require('../../cmn/model');
+var error = require('./error');
 
 var dispatcher = {};
 
@@ -23,7 +24,11 @@ dispatcher.dispatch = function (req, resp) {
     switch (uri) {
         case '/getPictures':
             var rootUrl = '/picture/';
-            model.pictures.queryAll(function (err, rows) {
+            var params = {};
+            params['startId'] = query['startId'] ? query['startId'] : '';
+            params['limit'] = query['limit'] ? query['limit'] : 10;
+
+            model.pictures.queryPage(params, function (err, rows) {
                 for (var i in rows) {
                     rows[i].file = rootUrl + rows[i].file;
                 }
@@ -33,7 +38,7 @@ dispatcher.dispatch = function (req, resp) {
             break;
 
         default:
-            e404(resp);
+            error.e404(resp);
     }
 };
 
@@ -44,16 +49,6 @@ var end = function (resp, content) {
     var respContent = JSON.stringify(content);
     console.log('resp:' + respContent);
     resp.end(respContent);
-};
-
-var e404 = function (resp) {
-    resp.writeHead('404', {
-        'Content-Type': 'text/html'
-    });
-    
-    fs.readFile(__dirname + '/../www/view/err/404.html', function (err, data) {
-        resp.end(data);
-    });
 };
 
 process.on('SIGINT', function () {

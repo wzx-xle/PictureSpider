@@ -22,6 +22,22 @@ module.exports = {
                 callback(err, rows);
             });
         },
+        queryPage: function (query, callback) {
+            var sql = 'SELECT * FROM pictures WHERE id <= ? ORDER BY id DESC LIMIT ?';
+            var params = [];
+            if (!query.startId) {
+                sql = 'SELECT * FROM pictures WHERE id <= (select max(id) from pictures) ORDER BY id DESC LIMIT ?';
+                params.push(parseInt(query.limit));
+            }
+            else {
+                params.push(parseInt(query.startId));
+                params.push(parseInt(query.limit));
+            }
+
+            pool.query(sql, params, function (err, rows, fields) {
+                callback(err, rows);
+            });
+        },
         insert: function (model, callback) {
             pool.query('insert into pictures set ?', model, function (err, rows, fields) {
                 callback(err, rows);
