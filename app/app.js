@@ -159,6 +159,7 @@ var pictureRequest = function (reqArgs, callback) {
 // 设置执行队列，解析帖子内容，并下载图片
 var queue = async.queue(function (task, callback) {
     htmlRequest(task, function (err, sres) {
+        console.log('\nt ' + task.url);
         var $ = cheerio.load(sres.text);
 
         // 帖子模型
@@ -190,7 +191,7 @@ var queue = async.queue(function (task, callback) {
 
         var _topicId = task.url.match('topic/([a-zA-Z0-9_$]{7,})/')[1];
 
-        // 图片下载完成后的处理部分
+        // 图片下载完成后保存到数据库
         ep.after('picture_' + _topicId, pictureModels.length, function (models) {
             // 将帖子信息插入数据
             model.topics.insert(topicModel, function (err, rows) {
@@ -224,21 +225,20 @@ var queue = async.queue(function (task, callback) {
         for (var i in pictureModels) {
             var picture = utils.clone(pictureModels[i]);
             picture.refer = task.url;
-            console.log('on ' + picture.url);
             pictureRequest(picture, function (err, reqArgs) {
                 if (err) {
                     console.error('183 ' + err);
                     return;
                 }
                 if (reqArgs['file']) {
+                    console.log('p ' + reqArgs.url);
+
                     delete reqArgs.refer;
                     ep.emit('picture_' + _topicId, reqArgs);
                 }
                 else {
                     ep.emit('picture_' + _topicId)
                 }
-
-                console.log('after ' + reqArgs.url);
             });
         }
     });
@@ -260,7 +260,7 @@ utils.timer(1000 * 1, function () {
 utils.timer(1000 * 60 * 5 * groups.length, function () {
 
     // 定时获取帖子列表
-    utils.timerFor(1000 * 60 * 5, utils.clone(groupPageUrls), function (groupUrl) {
+    utils.timerFor(1000 * 60 * 3, utils.clone(groupPageUrls), function (groupUrl) {
         htmlRequest(groupUrl, function (err, sres) {
             var $ = cheerio.load(sres.text);
             var result = $('.olt .title a');

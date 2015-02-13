@@ -17,7 +17,7 @@
         ],
         "groupUrlTemplate": "http://www.douban.com/group/{1}/discussion?start={2}",
         "groupReferer": "http://www.douban.com/group/{1}/discussion?start=50",
-        "maxPage": 2,
+        "maxPage": 1,
         "browserCommonHeader": {
             "Cache_Control": "max-age=0",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
