@@ -6,6 +6,15 @@ var pool = mysql.createPool(config.db);
 // 查询格式处理，支持直接写对象
 pool.config.connectionConfig.queryFormat = function (query, values) {
     if (!values) return query;
+
+    if (query.toLocaleLowerCase().indexOf('insert') >= 0) {
+        var setVal = [];
+        for (var key in values) {
+            setVal.push(key + '=' + this.escape(values[key]));
+        }
+        return query.replace(/\?/g, setVal.join(','));
+    }
+
     return query.replace(/\:(\w+)/g, function (txt, key) {
         if (values.hasOwnProperty(key)) {
             return this.escape(values[key]);
@@ -17,7 +26,7 @@ pool.config.connectionConfig.queryFormat = function (query, values) {
 module.exports = {
     tags: {
         queryById: function (id, callback) {
-            pool.query('select * from tags where id=?', [id], function (err, rows, fields) {
+            pool.query('select * from tags where id = :id', {id: id}, function (err, rows, fields) {
                 callback(err, rows);
             });
         },

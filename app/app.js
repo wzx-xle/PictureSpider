@@ -10,8 +10,8 @@ var async = require('async');
 
 // 本地模块
 var common = require('../cmn/common');
-var model = require('../cmn/model');
 
+var model = common.model;
 var utils = common.utils;
 var config = common.config;
 
@@ -220,14 +220,12 @@ utils.timer(1000 * 1, function () {
     }
 });
 
-debugger;
 // 定时检查，5min
 utils.timer(1000 * 60 * 5 * groups.length, function () {
 
     // 定时获取帖子列表
     utils.timerFor(1000 * 60 * 5, utils.clone(groupPageUrls), function (groupUrl) {
         htmlRequest(groupUrl, function (err, sres) {
-            debugger;
             var $ = cheerio.load(sres.text);
             var result = $('.olt .title a');
             if (result && result.length != 0) {

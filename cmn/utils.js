@@ -9,7 +9,6 @@ var utils = {};
  * @param {Number}   model    目录权限，默认0777
  */
 utils.mkdirsSync = function (dirPath, model) {
-    debugger;
     if (!fs.existsSync(dirPath)) {
         var parentDir = path.dirname(dirPath);
         utils.mkdirsSync(parentDir, model);
