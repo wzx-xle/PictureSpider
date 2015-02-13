@@ -7,6 +7,7 @@ var superagent = require('superagent');
 var request = require('request');
 var cheerio = require('cheerio');
 var async = require('async');
+var eventproxy = require('eventproxy');
 
 // 本地模块
 var common = require('../cmn/common');
@@ -32,6 +33,8 @@ var currCookie = 0;
 var topics = [];
 // 小组访问链接
 var groupPageUrls = [];
+// 同步控制
+var ep = new eventproxy();
 
 // 设置HTTP代理头
 var setCommonHeader = function (req) {
@@ -77,7 +80,8 @@ var createGroupPageUrls = function () {
             var url = groupUrlTemplate.replace('{1}', groupId).replace('{2}', j * 25);
             groupPageUrls.push({
                 url: url,
-                refer: groupReferer.replace('{1}', groupId)
+                refer: groupReferer.replace('{1}', groupId),
+                groupId: groupId
             });
         }
     }
@@ -94,7 +98,7 @@ var htmlRequest = function (reqArgs, callback) {
     setCommonHeader(req);
     req.set("Referer", reqArgs.refer).set("Cookie", cookies[currCookie]).end(function (err, sres) {
         if (err) {
-            console.error(err);
+            console.error('97 ' + err);
         }
         if (sres.status != 200) {
             switchCookie();
@@ -126,8 +130,10 @@ var pictureRequest = function (reqArgs, callback) {
     // 文件存在，则不下载
     if (fs.existsSync(localFile)) {
         if (callback) {
-            callback();
+            delete reqArgs.file;
+            callback(null, reqArgs);
         }
+        return;
     }
     utils.mkdirsSync(path.dirname(localFile));
     request
@@ -135,7 +141,7 @@ var pictureRequest = function (reqArgs, callback) {
         .on('response', function (resp) {
             if (resp.statusCode == 200) {
                 if (callback) {
-                    callback();
+                    callback(null, reqArgs);
                 }
             }
         })
@@ -144,7 +150,7 @@ var pictureRequest = function (reqArgs, callback) {
                 fs.unlinkSync(localFile);
             }
             if (callback) {
-                callback(err);
+                callback(err, reqArgs);
             }
         })
         .pipe(fs.createWriteStream(localFile));
@@ -159,14 +165,14 @@ var queue = async.queue(function (task, callback) {
         var topicModel = {};
         topicModel['url'] = task.url;
         topicModel['title'] = $('#content>h1').text().trim();
-        topicModel['authorId'] = $('#content .from>a').attr('href').match('group/people/([a-zA-Z0-9_$]+)/')[1];
+        topicModel['authorId'] = $('#content .from>a').attr('href').match('group/people/([a-zA-Z0-9_$]+)')[1];
 
         // 图片模型集合
         var pictureModels = [];
         $('#content .topic-content img:not(.pil)').each(function (k, v) {
             var url = v.attribs.src;
-            var file = 'douban/' + utils.date2str() + '/';
-            file += topicModel['authorId'] + '_' + url.match('p[0-9]{3,9}.jpg')[0];
+            var file = 'douban/' + task.groupId + '/';
+            file += topicModel['authorId'] + '_' + url.match('p[0-9]{3,9}.[a-zA-Z_]+')[0];
 
             pictureModels.push({
                 url: url,
@@ -174,36 +180,66 @@ var queue = async.queue(function (task, callback) {
             });
         });
 
-        // 下载图片
-        for (var i = 0; i < pictureModels.length; i++) {
-            var picture = utils.clone(pictureModels[i]);
-            picture.refer = task.url;
-            pictureRequest(picture, function () {
-                console.log(picture.url);
-            });
+        // 没有图片，则不下载和保存
+        if (pictureModels.length == 0) {
+            if (callback) {
+                callback();
+            }
+            return;
         }
 
-        // 将帖子信息插入数据
-        model.topics.insert(topicModel, function (err, rows) {
-            if (err) throw err;
-            var topicId = rows.insertId;
-            for (var i = 0; i < pictureModels.length; i++) {
-                var picture = pictureModels[i];
-                picture['topicId'] = topicId;
-                model.pictures.insert(picture, function (err, rows) {
-                    if (err) {
-                        console.error(err);
-                    }
+        var _topicId = task.url.match('topic/([a-zA-Z0-9_$]{7,})/')[1];
 
-                    if (!rows.insertId) {
-                        console.log('picture insert faild !' + JSON.stringify(picture))
+        // 图片下载完成后的处理部分
+        ep.after('picture_' + _topicId, pictureModels.length, function (models) {
+            // 将帖子信息插入数据
+            model.topics.insert(topicModel, function (err, rows) {
+                if (err) throw err;
+
+                var topicId = rows.insertId;
+                for (var i in models) {
+                    var picture = models[i];
+                    if (!picture) {
+                        continue;
                     }
-                });
+                    picture['topicId'] = topicId;
+
+                    model.pictures.insert(picture, function (err, rows) {
+                        if (err) {
+                            console.error('201 ' + err);
+                        }
+                        if (!rows.insertId) {
+                            console.log('picture insert faild !' + JSON.stringify(picture))
+                        }
+                    });
+                }
+            });
+
+            if (callback) {
+                callback();
             }
         });
 
-        if (callback) {
-            callback();
+        // 下载图片
+        for (var i in pictureModels) {
+            var picture = utils.clone(pictureModels[i]);
+            picture.refer = task.url;
+            console.log('on ' + picture.url);
+            pictureRequest(picture, function (err, reqArgs) {
+                if (err) {
+                    console.error('183 ' + err);
+                    return;
+                }
+                if (reqArgs['file']) {
+                    delete reqArgs.refer;
+                    ep.emit('picture_' + _topicId, reqArgs);
+                }
+                else {
+                    ep.emit('picture_' + _topicId)
+                }
+
+                console.log('after ' + reqArgs.url);
+            });
         }
     });
 }, 1);
@@ -232,7 +268,8 @@ utils.timer(1000 * 60 * 5 * groups.length, function () {
                 result.each(function (k, v) {
                     topics.push({
                         refer: groupUrl.url,
-                        url: v.attribs['href']
+                        url: v.attribs['href'],
+                        groupId: groupUrl.groupId
                     });
                 });
             } else {
