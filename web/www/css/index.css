@@ -45,7 +45,7 @@
 }
 
 #navigateBar .top {
-    background-color: gray;
+
 }
 
 #controller .next {}
@@ -55,6 +55,8 @@
 }
 
 #buttom p {
-    padding: 3px 36%;
+    padding: 7px 0;
+    margin: 0 0;
+    text-align: center;
     font-size: 0.7em;
 }
