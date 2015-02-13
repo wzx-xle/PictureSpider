@@ -32,6 +32,9 @@ dispatcher.dispatch = function (req, resp) {
                     rows[i].file = rootUrl + rows[i].file;
                 }
                 respContent['pictures'] = rows;
+                if (rows.length == 0) {
+                    respContent['status'] = 1;
+                }
                 end(resp, respContent);
             });
             break;

@@ -35,8 +35,8 @@ module.exports = {
         },
         queryPage: function (query, callback) {
             var sql = 'SELECT * FROM pictures WHERE id <= :startId ORDER BY id DESC LIMIT :limit';
-            var params = [];
-            if (!query.startId) {
+
+            if (!query.startId && query.startId != 0) {
                 sql = 'SELECT * FROM pictures WHERE id <= (select max(id) from pictures) ORDER BY id DESC LIMIT :limit';
             }
 

@@ -154,7 +154,7 @@ utils.checkRule = function (data, rules) {
     if (rules.length == 0) {
         return true;
     }
-    debugger;
+
     var isMatch = false;
     // 校验每一个规则
     for (var i in rules) {

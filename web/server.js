@@ -61,7 +61,7 @@ var updateRules = function (callback) {
  * @param {Object} resp 响应对象
  */
 var httpServer = function (req, resp) {
-    debugger;
+    //debugger;
     var clientIp = utils.getClientIp(req);
     console.log('request ' + req.method + ' ' + clientIp + ' ' + req.url);
 
