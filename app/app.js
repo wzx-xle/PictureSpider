@@ -15,19 +15,25 @@ var common = require('../cmn/common');
 var model = common.model;
 var utils = common.utils;
 var config = common.config;
+var doubanCfg = config.app.douban;
 
 // 本地文件保存路径
 var picDir = config.picDir;
 
 // 小组ID集合
-var groups = config.app.groups;
+var groups = doubanCfg.groups;
 // 小组URL模版
-var groupUrlTemplate = config.app.groupUrlTemplate;
-var maxPage = config.app.maxPage;
+var groupUrlTemplate = doubanCfg.groupUrlTemplate;
+var maxPage = doubanCfg.maxPage;
+// 定时周期
+var timeCfg = doubanCfg.time;
+var time_all = timeCfg.all instanceof Array ? timeCfg.all : [parseInt(timeCfg.all)];
+var time_groupPage = timeCfg.groupPage instanceof Array ? timeCfg.groupPage : [parseInt(timeCfg.groupPage)];
+var time_topic = timeCfg.topic instanceof Array ? timeCfg.topic : [parseInt(timeCfg.topic)];
 
 // 请求头参数
-var groupReferer = config.app.groupReferer;
-var browserCommonHeader = config.app.browserCommonHeader;
+var groupReferer = doubanCfg.groupReferer;
+var browserCommonHeader = doubanCfg.browserCommonHeader;
 
 // cookies
 var cookies = [""];
@@ -37,6 +43,7 @@ var currCookie = 0;
 var topics = [];
 // 小组访问链接
 var groupPageUrls = [];
+
 // 同步控制
 var ep = new eventproxy();
 
@@ -101,7 +108,7 @@ var htmlRequest = function (reqArgs, callback) {
     setCommonHeader(req);
     req.set("Referer", reqArgs.refer).set("Cookie", cookies[currCookie]).end(function (err, sres) {
         if (err) {
-            console.error('97 ' + err);
+            console.error('104 ' + err);
         }
         if (sres.status != 200) {
             switchCookie();
@@ -209,7 +216,7 @@ var queue = async.queue(function (task, callback) {
 
                     model.pictures.insert(picture, function (err, rows) {
                         if (err) {
-                            console.error('201 ' + err);
+                            console.error('212 ' + err);
                         }
                         if (!rows.insertId) {
                             console.log('picture insert faild !' + JSON.stringify(picture))
@@ -229,7 +236,7 @@ var queue = async.queue(function (task, callback) {
             picture.refer = task.url;
             pictureRequest(picture, function (err, reqArgs) {
                 if (err) {
-                    console.error('183 ' + err);
+                    console.error('232 ' + err);
                     return;
                 }
                 if (reqArgs['file']) {
@@ -252,17 +259,28 @@ createGroupPageUrls();
 /**
  * 定时向帖子队列中添加下载信息
  */
-utils.timer(1000 * 1, function () {
+utils.timer(function () {
+    var time = utils.random(time_topic[0], time_topic[1]);
+    console.log('time_topic=' + time);
+    return time * 1000;
+}, function () {
     if (topics.length > 0) {
         queue.push(topics.shift());
     }
 });
 
-// 定时检查，5min
-utils.timer(1000 * 60 * 5 * groups.length, function () {
-
+// 定时检查，5min 1000 * 60 * 5 * groups.length
+utils.timer(function () {
+    var time = utils.random(time_all[0], time_all[1]);
+    console.log('time_all=' + time);
+    return time * 1000;
+}, function () {
     // 定时获取帖子列表
-    utils.timerFor(1000 * 60 * 3, utils.clone(groupPageUrls), function (groupUrl) {
+    utils.timerFor(function () {
+        var time = utils.random(time_groupPage[0], time_groupPage[1]);
+        console.log('time_groupPage=' + time);
+        return time * 1000;
+    }, utils.clone(groupPageUrls), function (groupUrl) {
         htmlRequest(groupUrl, function (err, sres) {
             var $ = cheerio.load(sres.text);
             var result = $('.olt .title a');

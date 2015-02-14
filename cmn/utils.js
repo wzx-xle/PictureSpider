@@ -58,10 +58,13 @@ utils.readFileSync = function (filePath, options) {
 utils.timer = function (time, callback) {
     var self = function () {
         callback();
+
+        // 下一次调用定时
+        var currTime = time;
         if (time instanceof Function) {
-            time = time();
+            currTime = time();
         }
-        setTimeout(self, time);
+        setTimeout(self, currTime);
     }
     
     self();
@@ -69,7 +72,7 @@ utils.timer = function (time, callback) {
 
 /**
  * 定时循环，相当于在for循环中增加sleep方法，在回调函数返回false时，顺序不可测
- * @param {Number}   time     每次循环暂停的时间
+ * @param {Number|Function}   time     每次循环暂停的时间
  * @param {Array}    params   参数数组
  * @param {Function} callback 回调函数
  */
@@ -80,7 +83,13 @@ utils.timerFor = function (time, params, callback) {
             if (callback(param) == false) {
                 params.push(param);
             }
-            setTimeout(self, time);
+
+            // 下一次调用定时
+            var currTime = time;
+            if (time instanceof Function) {
+                currTime = time();
+            }
+            setTimeout(self, currTime);
         }
     };
     
@@ -180,14 +189,14 @@ utils.checkRule = function (data, rules) {
  * @returns {Number} 随机整数
  */
 utils.random = function (min, max) {
-    if (arguments.length == 1) {
-        return arguments[0];
+    if (!min) {
+        return parseInt(Math.random() * 10);
     }
-    else if (arguments.length == 2) {
-        return parseInt(Math.random() * (max - min) + min);
+    else if (!max) {
+        return min;
     }
     else {
-        return parseInt(Math.random() * 10);
+        return parseInt(Math.random() * (max - min) + min);
     }
 };
 
