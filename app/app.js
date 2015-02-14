@@ -175,7 +175,13 @@ var queue = async.queue(function (task, callback) {
         var topicModel = {};
         topicModel['url'] = task.url;
         topicModel['title'] = $('#content>h1').text().trim();
-        topicModel['authorId'] = $('#content .from>a').attr('href').match('group/people/([a-zA-Z0-9_$]+)')[1];
+        topicModel['authorId'] = $('#content .from>a').attr('href');
+        if (topicModel.authorId) {
+            topicModel['authorId'] = topicModel.authorId.match('group/people/([a-zA-Z0-9_$]+)')[1];
+        }
+        else {
+            console.log('无法获取作者ID')
+        }
 
         // 图片模型集合
         var pictureModels = [];
@@ -260,9 +266,7 @@ createGroupPageUrls();
  * 定时向帖子队列中添加下载信息
  */
 utils.timer(function () {
-    var time = utils.random(time_topic[0], time_topic[1]);
-    console.log('time_topic=' + time);
-    return time * 1000;
+    return utils.random(time_topic[0], time_topic[1]) * 1000;
 }, function () {
     if (topics.length > 0) {
         queue.push(topics.shift());
@@ -282,6 +286,7 @@ utils.timer(function () {
         return time * 1000;
     }, utils.clone(groupPageUrls), function (groupUrl) {
         htmlRequest(groupUrl, function (err, sres) {
+            console.log('\ng ' + groupUrl.url);
             var $ = cheerio.load(sres.text);
             var result = $('.olt .title a');
             if (result && result.length != 0) {
