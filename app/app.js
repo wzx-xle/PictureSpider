@@ -16,17 +16,21 @@ var model = common.model;
 var utils = common.utils;
 var config = common.config;
 
+// 本地文件保存路径
+var picDir = config.picDir;
+
 // 小组ID集合
 var groups = config.app.groups;
 // 小组URL模版
 var groupUrlTemplate = config.app.groupUrlTemplate;
 var maxPage = config.app.maxPage;
 
-// cookies
-var cookies = [""];
-
 // 请求头参数
 var groupReferer = config.app.groupReferer;
+var browserCommonHeader = config.app.browserCommonHeader;
+
+// cookies
+var cookies = [""];
 var currCookie = 0;
 
 // 帖子链接
@@ -38,7 +42,6 @@ var ep = new eventproxy();
 
 // 设置HTTP代理头
 var setCommonHeader = function (req) {
-    var browserCommonHeader = config.app.browserCommonHeader;
     for (var k in browserCommonHeader) {
         req.set(k.replace('_', '-'), browserCommonHeader[k]);
     };
@@ -119,14 +122,13 @@ var htmlRequest = function (reqArgs, callback) {
 var pictureRequest = function (reqArgs, callback) {
     var options = {};
     options['headers'] = {};
-    var browserCommonHeader = config.app.browserCommonHeader;
     for (var k in browserCommonHeader) {
         options.headers[k.replace('_', '-')] = browserCommonHeader[k];
     }
     options.headers['Referer'] = reqArgs.refer;
     options.headers['Cookie'] = cookies[currCookie];
 
-    var localFile = path.join(config.picDir, reqArgs.file);
+    var localFile = path.join(picDir, reqArgs.file);
     // 文件存在，则不下载
     if (fs.existsSync(localFile)) {
         if (callback) {

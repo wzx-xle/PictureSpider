@@ -52,12 +52,15 @@ utils.readFileSync = function (filePath, options) {
 
 /**
  * 定时器，在回调函数执行完成后，做下一次定时操作
- * @param {Number}   time     周期
+ * @param {Number|Function}   time     周期，或者返回周期的函数
  * @param {Function} callback 回调函数
  */
 utils.timer = function (time, callback) {
     var self = function () {
         callback();
+        if (time instanceof Function) {
+            time = time();
+        }
         setTimeout(self, time);
     }
     
@@ -168,6 +171,24 @@ utils.checkRule = function (data, rules) {
     }
 
     return isMatch;
-}
+};
+
+/**
+ * 计算随机数，可以指定范围，默认范围0-10
+ * @param   {Number} min 最小值
+ * @param   {Number} max 最大值
+ * @returns {Number} 随机整数
+ */
+utils.random = function (min, max) {
+    if (arguments.length == 1) {
+        return arguments[0];
+    }
+    else if (arguments.length == 2) {
+        return parseInt(Math.random() * (max - min) + min);
+    }
+    else {
+        return parseInt(Math.random() * 10);
+    }
+};
 
 module.exports = utils;
