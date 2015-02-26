@@ -7,4 +7,7 @@ var utils = require('../../cmn/utils');
 //    console.timeEnd('timer');
 //});
 
-console.log(utils.date2str());
+function test_date2str() {
+    var day = new Date();
+    utils.date2str();
+}

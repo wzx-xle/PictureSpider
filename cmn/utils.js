@@ -167,16 +167,26 @@ utils.checkRule = function (data, rules) {
     }
 
     var isMatch = false;
+    var type1 = false;
     // 校验每一个规则
     for (var i in rules) {
         if (data.match(rules[i].rule)) {
             if (rules[i].type == 0) {
                 return false;
             }
-            else {
+            else if (rules[i].type == 1) {
                 isMatch = true;
             }
         }
+
+        if (rules[i].type == 1) {
+            type1 = true;
+        }
+    }
+
+    // 没有匹配上且没有type=1的规则时，校验成功
+    if (!isMatch && !type1) {
+        isMatch = true;
     }
 
     return isMatch;
