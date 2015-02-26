@@ -252,7 +252,7 @@ var queue = async.queue(function (task, callback) {
                 }
                 if (reqArgs['file']) {
                     console.log('p ' + reqArgs.url);
-                    console.log('   ==> ' + reqArgs.file);
+                    console.log('  ==> ' + reqArgs.file);
 
                     delete reqArgs.refer;
                     ep.emit('picture_' + _topicId, reqArgs);
