@@ -1,14 +1,15 @@
 {
-  "name": "SpiderWeb",
-  "version": "0.0.1",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "xiang2013",
-  "license": "LGPLv2.1",
-  "dependencies": {
-    "url": "^0.10.2"
-  }
+    "name": "SpiderWeb",
+    "version": "0.0.1",
+    "description": "web应用，用于展示爬取结果和管理爬虫",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "xiang2013",
+    "license": "LGPLv2.1",
+    "repository": {
+        "type": "git",
+        "url": "https://git.oschina.net/hyhjwzx/PictureSpider.git"
+    }
 }

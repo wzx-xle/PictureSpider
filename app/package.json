@@ -1,18 +1,22 @@
 {
-  "name": "SpiderService",
-  "version": "0.0.1",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "xiang2013",
-  "license": "LGPLv2.1",
-  "dependencies": {
-    "async": "^0.9.0",
-    "cheerio": "^0.18.0",
-    "eventproxy": "^0.3.2",
-    "request": "^2.53.0",
-    "superagent": "^0.21.0"
-  }
+    "name": "SpiderService",
+    "version": "0.0.1",
+    "description": "后台服务，实现爬取功能",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "xiang2013",
+    "license": "LGPLv2.1",
+    "repository": {
+        "type": "git",
+        "url": "https://git.oschina.net/hyhjwzx/PictureSpider.git"
+    },
+    "dependencies": {
+        "async": "^0.9.0",
+        "cheerio": "^0.18.0",
+        "eventproxy": "^0.3.2",
+        "request": "^2.53.0",
+        "superagent": "^0.21.0"
+    }
 }
