@@ -248,7 +248,6 @@ var queue = async.queue(function (task, callback) {
             pictureRequest(picture, function (err, reqArgs) {
                 if (err) {
                     console.error('picture request ' + err);
-                    return;
                 }
                 if (reqArgs['file']) {
                     console.log('p ' + reqArgs.url);
