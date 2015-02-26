@@ -14,7 +14,12 @@
         "douban": {
             "groups": [
                 "haixiuzu",
-                "516876"
+                "516876",
+                "274363",
+                "meituikong",
+                "510760",
+                "441239",
+                "531651"
             ],
             "groupUrlTemplate": "http://www.douban.com/group/{1}/discussion?start={2}",
             "groupReferer": "http://www.douban.com/group/{1}/discussion?start=50",
@@ -27,7 +32,7 @@
                 "Accept_Language": "zh-CN,zh;q=0.8"
             },
             "time": {
-                "all": [240, 360],
+                "all": [840, 1260],
                 "groupPage": [120, 180],
                 "topic": [1, 4]
             }
