@@ -11,6 +11,8 @@ page.attr.picEnd = false;
 page.attr.lastPictureId = 1;
 // 本次异步加载的图片的加载状态，0表示全部加载完成
 page.attr.picLoadStatus = 0;
+// 同一段时间只能加载一次列表
+page.attr.picListOneLoad = true;
 
 page.event.onPageLoad = function () {
     // 设置dispaly的minHeight
@@ -48,29 +50,31 @@ page.view.addPicture = function (limit, startId) {
                 display.appendChild(img);
             }
             page.attr.lastPictureId = pictures.pop().id;
+            page.attr.picListOneLoad = true;
         } else if (data.status == 1) {
             page.attr.picEnd = true;
         }
     });
 };
 
-page.event.onMouseOutNavItem = function () {
-    console.log('nav item out');
-    this.style.backgroundColor = '';
-};
-
 page.event.onNearEnd = function () {
     var top = document.body.scrollTop;
     var height = document.body.offsetHeight - window.innerHeight;
+    // 同一时刻只能加载一次列表
+    if (!page.attr.picListOneLoad) {
+        return;
+    }
     
     // 满足大于指定的比例，还有图片可以加载，上次图片已经加载完成
     if (top / height > page.attr.autoLoadRatio && !page.attr.picEnd && !page.attr.picLoadStatus) {
+        page.attr.picListOneLoad = false;
         page.view.addPicture(10, page.attr.lastPictureId - 1);
     }
 };
 
 page.event.onPictureLoad = function () {
     page.attr.picLoadStatus--;
+    console.log('page.attr.picLoadStatus ' + page.attr.picLoadStatus);
 }
 
 page.model.getJSON = function (url, succ, fail) {
