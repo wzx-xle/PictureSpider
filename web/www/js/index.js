@@ -5,6 +5,13 @@ var page = {
     model: {}
 };
 
+page.attr.autoLoadRatio = 0.9;
+// 是否已经没有图片了
+page.attr.picEnd = false;
+page.attr.lastPictureId = 1;
+// 本次异步加载的图片的加载状态，0表示全部加载完成
+page.attr.picLoadStatus = 0;
+
 page.event.onPageLoad = function () {
     // 设置dispaly的minHeight
     //var minHeight = document.documentElement.clientHeight - document.getElementById('header').offsetHeight - document.getElementById('buttom').offsetHeight;
@@ -15,7 +22,8 @@ page.event.onPageLoad = function () {
     document.getElementById('display').style.minHeight = minHeight + 'px';
 
     page.view.addPicture(10);
-    page.view.initNav();
+    
+    window.onscroll = page.event.onNearEnd;
 };
 
 page.view.addPicture = function (limit, startId) {
@@ -31,68 +39,19 @@ page.view.addPicture = function (limit, startId) {
         if (data.status == 0) {
             var pictures = data.pictures;
             var display = document.getElementById('display');
+            page.attr.picLoadStatus = pictures.length;
             for (var i in pictures) {
                 var src = pictures[i].file;
                 var img = document.createElement('img');
+                img.onload = page.event.onPictureLoad;
                 img.setAttribute('src', src);
                 display.appendChild(img);
             }
-            page.attr['lastPictureId'] = pictures.pop().id;
-        }
-        else if (data.status == 1) {
-
+            page.attr.lastPictureId = pictures.pop().id;
+        } else if (data.status == 1) {
+            page.attr.picEnd = true;
         }
     });
-};
-
-page.view.initNav = function () {
-    var nav = document.getElementById('navigateBar');
-    nav.onmouseover = page.event.onMouseOverNav;
-    nav.onmouseout = page.event.onMouseOutNav;
-
-
-    for (var i in nav.childNodes) {
-        var item = nav.childNodes[i];
-        if (item.nodeType == 1) {
-            item.onmouseover = page.event.onMouseOverNavItem;
-            item.onmouseout = page.event.onMouseOutNavItem;
-
-            var classVal = item.attributes['class'].value || item.attributes['class'].nodeValue;
-            if (classVal == 'top') {
-                item.onclick = page.event.onClickTop;
-            }
-            else if (classVal == 'next') {
-                item.onclick = page.event.onClickNext;
-            }
-
-            console.log(nav.childNodes[i].nodeName);
-        }
-    }
-};
-
-page.event.onClickTop = function () {
-    console.log('click top');
-    window.scrollTo(0,0);
-};
-
-page.event.onClickNext = function () {
-    console.log('click next');
-    page.view.addPicture(8, page.attr['lastPictureId'] - 1);
-};
-
-page.event.onMouseOverNav = function () {
-    console.log('nav over');
-    //this.style.backgroundColor = 'black';
-};
-
-page.event.onMouseOutNav = function () {
-    console.log('nav out');
-    //this.style.backgroundColor = 'gray';
-};
-
-page.event.onMouseOverNavItem = function () {
-    console.log('nav item over');
-    this.style.backgroundColor = 'gray';
 };
 
 page.event.onMouseOutNavItem = function () {
@@ -100,12 +59,25 @@ page.event.onMouseOutNavItem = function () {
     this.style.backgroundColor = '';
 };
 
+page.event.onNearEnd = function () {
+    var top = document.body.scrollTop;
+    var height = document.body.offsetHeight - window.innerHeight;
+    
+    // 满足大于指定的比例，还有图片可以加载，上次图片已经加载完成
+    if (top / height > page.attr.autoLoadRatio && !page.attr.picEnd && !page.attr.picLoadStatus) {
+        page.view.addPicture(10, page.attr.lastPictureId - 1);
+    }
+};
+
+page.event.onPictureLoad = function () {
+    page.attr.picLoadStatus--;
+}
+
 page.model.getJSON = function (url, succ, fail) {
     var ajax = null;
     if (window.XMLHttpRequest) {
         ajax = new XMLHttpRequest();
-    }
-    else {
+    } else {
         ajax = new ActiveXObject('Microsoft.XMLHTTP');
     }
 
@@ -114,8 +86,7 @@ page.model.getJSON = function (url, succ, fail) {
         if (ajax.readyState == 4) {
             if (ajax.status == 200) {
                 succ(JSON.parse(ajax.responseText));
-            }
-            else {
+            } else {
                 if (faild) {
                     faild(ajax.status);
                 }
