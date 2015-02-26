@@ -108,14 +108,15 @@ var htmlRequest = function (reqArgs, callback) {
     setCommonHeader(req);
     req.set("Referer", reqArgs.refer).set("Cookie", cookies[currCookie]).end(function (err, sres) {
         if (err) {
-            console.error('104 ' + err);
+            console.error('html request ' + err);
+            return;
         }
         if (sres.status != 200) {
             switchCookie();
             return;
         }
         if (callback) {
-            callback(err, sres);
+            callback(cheerio.load(sres.text));
         }
 
     });
@@ -167,9 +168,8 @@ var pictureRequest = function (reqArgs, callback) {
 
 // 设置执行队列，解析帖子内容，并下载图片
 var queue = async.queue(function (task, callback) {
-    htmlRequest(task, function (err, sres) {
+    htmlRequest(task, function ($) {
         console.log('\nt ' + task.url);
-        var $ = cheerio.load(sres.text);
 
         // 帖子模型
         var topicModel = {};
@@ -210,7 +210,10 @@ var queue = async.queue(function (task, callback) {
         ep.after('picture_' + _topicId, pictureModels.length, function (models) {
             // 将帖子信息插入数据
             model.topics.insert(topicModel, function (err, rows) {
-                if (err) throw err;
+                if (err) {
+                    console.error('topic insert ' + err);
+                    return;
+                }
 
                 var topicId = rows.insertId;
                 for (var i in models) {
@@ -222,8 +225,10 @@ var queue = async.queue(function (task, callback) {
 
                     model.pictures.insert(picture, function (err, rows) {
                         if (err) {
-                            console.error('212 ' + err);
+                            console.error('picture insert ' + err);
+                            return;
                         }
+
                         if (!rows.insertId) {
                             console.log('picture insert faild !' + JSON.stringify(picture))
                         }
@@ -242,11 +247,12 @@ var queue = async.queue(function (task, callback) {
             picture.refer = task.url;
             pictureRequest(picture, function (err, reqArgs) {
                 if (err) {
-                    console.error('232 ' + err);
+                    console.error('picture request ' + err);
                     return;
                 }
                 if (reqArgs['file']) {
                     console.log('p ' + reqArgs.url);
+                    console.log('   ==> ' + reqArgs.file);
 
                     delete reqArgs.refer;
                     ep.emit('picture_' + _topicId, reqArgs);
@@ -285,9 +291,9 @@ utils.timer(function () {
         console.log('time_groupPage=' + time);
         return time * 1000;
     }, utils.clone(groupPageUrls), function (groupUrl) {
-        htmlRequest(groupUrl, function (err, sres) {
+        htmlRequest(groupUrl, function ($) {
             console.log('\ng ' + groupUrl.url);
-            var $ = cheerio.load(sres.text);
+
             var result = $('.olt .title a');
             if (result && result.length != 0) {
                 result.each(function (k, v) {
