@@ -1,6 +1,7 @@
 body {
     margin: 0;
 }
+
 #container {
     width: 99%;
     margin: 0 auto;
@@ -22,7 +23,9 @@ body {
 }
 
 #display img {
-
+    margin-top: 5px;
+    margin-left: 5px;
+    border: 1px solid gray;
 }
 
 #navigateBar {
@@ -47,12 +50,6 @@ body {
     color: white;
 }
 
-#navigateBar .top {
-
-}
-
-#controller .next {}
-
 #buttom {
     height: 30px;
 }
@@ -62,4 +59,27 @@ body {
     margin: 0 0;
     text-align: center;
     font-size: 0.7em;
+}
+
+#contextMenu {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0px;
+    top: 0px;
+    opacity: 0.6;
+    background-color: white;
+    height: 84px;
+    width: 55px;
+    padding-left: 0px;
+    margin-top: 0px;
+}
+
+.menuItem {
+    list-style-type: none;
+    margin-left: 1px;
+    margin-top: 2px;
+    width: 89%;
+    padding-left: 3px;
+    cursor: pointer;
 }
