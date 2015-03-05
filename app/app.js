@@ -188,7 +188,11 @@ var queue = async.queue(function (task, callback) {
         $('#content .topic-content img:not(.pil)').each(function (k, v) {
             var url = v.attribs.src;
             var file = 'douban/' + task.groupId + '/';
-            file += topicModel['authorId'] + '_' + url.match('p[0-9]{3,9}.[a-zA-Z_]+')[0];
+            var matchName = url.match('p[0-9]{3,9}.[a-zA-Z_]+');
+            if (!matchName || matchName.length == 0) {
+                return;
+            }
+            file += topicModel['authorId'] + '_' + matchName[0];
 
             pictureModels.push({
                 url: url,
