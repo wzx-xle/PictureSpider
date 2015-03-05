@@ -17,7 +17,7 @@ page.attr.picListOneLoad = true;
 page.event.onPageLoad = function () {
     // 设置dispaly的minHeight
     //var minHeight = document.documentElement.clientHeight - document.getElementById('header').offsetHeight - document.getElementById('buttom').offsetHeight;
-    var minHeight = document.documentElement.clientHeight - document.getElementById('buttom').offsetHeight - 16;
+    var minHeight = document.documentElement.clientHeight - document.getElementById('buttom').offsetHeight;
     if (minHeight < 0) {
         minHeight = 0;
     }

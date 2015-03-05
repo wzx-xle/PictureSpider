@@ -1,7 +1,6 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
-
 var url = require('url');
 
 var common = require('../cmn/common');
@@ -26,8 +25,10 @@ var rules = {
 var updateRules = function (callback) {
     // 查询数据的规则集合
     model.rules.queryAll(function (err, rows) {
-        if (err)
+        if (err) {
             console.error(err);
+            return;
+        }
 
         var tmp_ip = [];
         var tmp_topic = [];
