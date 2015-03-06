@@ -140,6 +140,7 @@ var pictureRequest = function (reqArgs, callback) {
     var localFile = path.join(picDir, reqArgs.file);
     // 文件存在，则不下载
     if (fs.existsSync(localFile)) {
+        console.log('exits file ' + reqArgs.file);
         if (callback) {
             delete reqArgs.file;
             callback(null, reqArgs);
