@@ -111,11 +111,11 @@ var htmlRequest = function (reqArgs, callback) {
             console.error('html request ' + err);
             return;
         }
+        
         if (sres.status != 200) {
-            switchCookie();
-            console.error('html request status ' + sres.status + ', has switch cookie.')
-            return;
+            console.error('html request status ' + sres.status + '.');
         }
+        
         if (callback) {
             callback(cheerio.load(sres.text));
         }
@@ -308,6 +308,8 @@ utils.timer(function () {
                 });
             } else {
                 switchCookie();
+                console.error('failed to get topics, switch cookie');
+                return false;
             }
 
             console.log("topics:" + topics.length);
