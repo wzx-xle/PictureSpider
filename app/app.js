@@ -295,9 +295,8 @@ utils.timer(function () {
         console.log('time_groupPage=' + time);
         return time * 1000;
     }, utils.clone(groupPageUrls), function (groupUrl) {
+        console.log('\ng ' + groupUrl.url);
         htmlRequest(groupUrl, function ($) {
-            console.log('\ng ' + groupUrl.url);
-
             var result = $('.olt .title a');
             if (result && result.length != 0) {
                 result.each(function (k, v) {
