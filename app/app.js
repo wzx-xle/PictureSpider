@@ -113,6 +113,7 @@ var htmlRequest = function (reqArgs, callback) {
         }
         if (sres.status != 200) {
             switchCookie();
+            console.error('html request status ' + sres.status + ', has switch cookie.')
             return;
         }
         if (callback) {
