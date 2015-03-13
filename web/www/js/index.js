@@ -63,7 +63,6 @@ page.view.createImage = function (pic) {
     img.onload = page.event.onPictureLoad;
     img.onerror = page.event.onPictureLoad;
     img.oncontextmenu = page.event.onRightClick;
-    img.onclick = page.view.cleanContextMenu;
     
     // 设置属性
     img.setAttribute('src', src);
@@ -90,7 +89,8 @@ page.event.onPageLoad = function () {
     window.onscroll = function (e) {
         page.event.onNearEnd(e);
         page.event.onScrollChange(e);
-    }
+    };
+    document.body.onclick = page.view.cleanContextMenu;
 };
 
 page.event.onNearEnd = function () {
