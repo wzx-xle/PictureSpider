@@ -5,6 +5,7 @@ var page = {
     model: {}
 };
 
+// 滚动条的位置大于该比例
 page.attr.autoLoadRatio = 0.9;
 // 是否已经没有图片了
 page.attr.picEnd = false;
@@ -13,6 +14,8 @@ page.attr.lastPictureId = 1;
 page.attr.picLoadStatus = 0;
 // 同一段时间只能加载一次列表
 page.attr.picListOneLoad = true;
+// 上下文菜单出现的时候，滚动条位置
+page.attr.scrollTopForContextMenu = 0;
 
 // 初始化上下文菜单
 page.view.initContextMenu = function () {
@@ -21,6 +24,11 @@ page.view.initContextMenu = function () {
     for (var i in menuItems) {
         menuItems[i].onclick = page.event.onMenuClick;
     }
+}
+
+// 取消上下文菜单
+page.view.cleanContextMenu = function () {
+    document.getElementById('contextMenu').style.display = 'none';
 }
 
 page.view.addPicture = function (limit, startId) {
@@ -54,7 +62,9 @@ page.view.createImage = function (pic) {
     // 设置事件
     img.onload = page.event.onPictureLoad;
     img.onerror = page.event.onPictureLoad;
-    img.onclick = page.event.onImgClick;
+    img.oncontextmenu = page.event.onRightClick;
+    img.onclick = page.view.cleanContextMenu;
+    
     // 设置属性
     img.setAttribute('src', src);
     var title = pic.laud + '赞，' + pic.tread + '踩';
@@ -77,7 +87,10 @@ page.event.onPageLoad = function () {
     
     page.view.addPicture(10);
 
-    window.onscroll = page.event.onNearEnd;
+    window.onscroll = function (e) {
+        page.event.onNearEnd(e);
+        page.event.onScrollChange(e);
+    }
 };
 
 page.event.onNearEnd = function () {
@@ -95,12 +108,16 @@ page.event.onNearEnd = function () {
     }
 };
 
-page.event.onImgClick = function (e) {
+page.event.onRightClick = function (e) {
     page.attr.clickedImg = this;
     var contextMenu = document.getElementById('contextMenu');
     contextMenu.style.left = (5 + e.x) + 'px';
     contextMenu.style.top = (2 + e.y) + 'px';
     contextMenu.style.display = 'block';
+    
+    page.attr.scrollTopForContextMenu = document.body.scrollTop;
+    
+    return false;
 };
 
 page.event.onMenuClick = function (e) {
@@ -112,6 +129,15 @@ page.event.onPictureLoad = function () {
     page.attr.picLoadStatus--;
     console.log('page.attr.picLoadStatus ' + page.attr.picLoadStatus);
 };
+
+page.event.onScrollChange = function () {
+    var scrollTop = document.body.scrollTop;
+    
+    if (Math.abs(page.attr.scrollTopForContextMenu - scrollTop) > 10) {
+        page.view.cleanContextMenu();
+    }
+    
+}
 
 page.model.getJSON = function (url, succ, fail) {
     var ajax = null;
