@@ -14,12 +14,12 @@
         "douban": {
             "groups": [
                 "haixiuzu",
-                "516876",
-                "274363",
-                "meituikong",
                 "510760",
                 "441239",
-                "531651"
+                "531651",
+                "meituikong",
+                "274363",
+                "516876"
             ],
             "groupUrlTemplate": "http://www.douban.com/group/{1}/discussion?start={2}",
             "groupReferer": "http://www.douban.com/group/{1}/discussion?start=50",
