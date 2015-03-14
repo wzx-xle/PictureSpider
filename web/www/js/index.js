@@ -76,7 +76,10 @@ page.view.cleanContextMenu = function () {
 page.view.createMenuItem = function (displayName, func) {
     var menuItem = document.createElement('li');
     menuItem.setAttribute('class', 'menuItem');
-    menuItem.onclick = func;
+    menuItem.onclick = function (e) {
+        func(e, this);
+        page.view.cleanContextMenu();
+    };
 
     var a = document.createElement('a');
     a.setAttribute('href', '#');
