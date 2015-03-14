@@ -25,35 +25,68 @@ page.attr.ContextMenuItems = [
         name: '赞一个',
         func: function (e) {
             var img = page.attr.clickedImg;
-            console.log(img.getAttribute('name'));
+            console.log(img.getAttribute('name') + ' - land');
+
+            // TODO
+
+            // 发起请求，成功后执行下面步骤
+            var title = img.getAttribute('title');
+            var land = title.split('，')[0];
+            title = title.replace(land, (parseInt(land) + 1) + '赞');
+            img.title = title;
         }
     },
     {
         name: '踩一脚',
         func: function (e) {
             var img = page.attr.clickedImg;
-            console.log(img.getAttribute('name'));
+            console.log(img.getAttribute('name') + ' - tread');
+
+            // TODO
+
+            // 发起请求，成功后执行下面步骤
+            var title = img.getAttribute('title');
+            var tread = title.split('，')[1].split(' ')[0];
+            title = title.replace(tread, (parseInt(tread) + 1) + '踩');
+            img.title = title;
         }
     },
     {
         name: '删掉吧',
         func: function (e) {
             var img = page.attr.clickedImg;
-            console.log(img.getAttribute('name'));
+            console.log(img.getAttribute('name') + ' - delPic');
+
+            if (confirm('请再次确认要删除该图片！')) {
+                // TODO
+
+                // 发起请求，成功后执行下面步骤
+                util.delEle(img);
+                page.attr.clickedImg = null;
+            }
         }
     },
     {
         name: '到原帖',
         func: function (e) {
             var img = page.attr.clickedImg;
-            console.log(img.getAttribute('name'));
+            console.log(img.getAttribute('name') + ' - toTopic');
+
+            // TODO
+
+            // 发起请求，成功后执行下面步骤
+            var newUrl = '#';
+            window.location = newUrl;
         }
     },
     {
         name: '单独看',
         func: function (e) {
             var img = page.attr.clickedImg;
-            console.log(img.getAttribute('name'));
+            console.log(img.getAttribute('name') + ' - newTab');
+            
+            var newUrl = img.getAttribute('src');
+            window.location = newUrl;
         }
     },
 ];
@@ -182,29 +215,8 @@ page.event.onRightClick = function (e) {
     return false;
 };
 
-page.event.onMenuClick = function (e) {
-    console.log(this.getAttribute('doType') + '-' + page.attr.clickedImg.getAttribute('name'));
-
-    var doType = this.getAttribute('doType');
-    switch (doType) {
-    case '':
-        break;
-    case '':
-        break;
-    case '':
-        break;
-    case '':
-        break;
-    case '':
-        break;
-    default:
-        break;
-    }
-}
-
 page.event.onPictureLoad = function () {
     page.attr.picLoadStatus--;
-    console.log('page.attr.picLoadStatus ' + page.attr.picLoadStatus);
 };
 
 page.event.onScrollChange = function () {
