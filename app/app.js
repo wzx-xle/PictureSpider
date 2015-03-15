@@ -27,9 +27,18 @@ var groupUrlTemplate = doubanCfg.groupUrlTemplate;
 var maxPage = doubanCfg.maxPage;
 // 定时周期
 var timeCfg = doubanCfg.time;
-var time_all = timeCfg.all instanceof Array ? timeCfg.all : [parseInt(timeCfg.all)];
 var time_groupPage = timeCfg.groupPage instanceof Array ? timeCfg.groupPage : [parseInt(timeCfg.groupPage)];
 var time_topic = timeCfg.topic instanceof Array ? timeCfg.topic : [parseInt(timeCfg.topic)];
+var time_all = [];
+if (timeCfg.all) {
+    time_all = timeCfg.all instanceof Array ? timeCfg.all : [parseInt(timeCfg.all)];
+}
+else {
+    for (var i in time_groupPage) {
+        time_all[i] = time_groupPage[i] * groups.length;
+    }
+}
+
 
 // 请求头参数
 var groupReferer = doubanCfg.groupReferer;
