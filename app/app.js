@@ -32,8 +32,7 @@ var time_topic = timeCfg.topic instanceof Array ? timeCfg.topic : [parseInt(time
 var time_all = [];
 if (timeCfg.all) {
     time_all = timeCfg.all instanceof Array ? timeCfg.all : [parseInt(timeCfg.all)];
-}
-else {
+} else {
     for (var i in time_groupPage) {
         time_all[i] = time_groupPage[i] * groups.length;
     }
@@ -120,11 +119,11 @@ var htmlRequest = function (reqArgs, callback) {
             console.error('html request ' + err);
             return;
         }
-        
+
         if (sres.status != 200) {
             console.error('html request status ' + sres.status + '.');
         }
-        
+
         if (callback) {
             callback(cheerio.load(sres.text));
         }
@@ -179,9 +178,9 @@ var pictureRequest = function (reqArgs, callback) {
 
 // 设置执行队列，解析帖子内容，并下载图片
 var queue = async.queue(function (task, callback) {
-    htmlRequest(task, function ($) {
-        console.log('\nt ' + task.url);
+    console.log('\nt ' + task.url);
 
+    htmlRequest(task, function ($) {
         // 帖子模型
         var topicModel = {};
         topicModel['url'] = task.url;
@@ -189,8 +188,7 @@ var queue = async.queue(function (task, callback) {
         topicModel['authorId'] = $('#content .from>a').attr('href');
         if (topicModel.authorId) {
             topicModel['authorId'] = topicModel.authorId.match('group/people/([a-zA-Z0-9_$]+)')[1];
-        }
-        else {
+        } else {
             console.log('无法获取作者ID')
         }
 
@@ -223,33 +221,46 @@ var queue = async.queue(function (task, callback) {
 
         // 图片下载完成后保存到数据库
         ep.after('picture_' + _topicId, pictureModels.length, function (models) {
-            // 将帖子信息插入数据
-            model.topics.insert(topicModel, function (err, rows) {
-                if (err) {
-                    console.error('topic insert ' + err);
-                    return;
+            debugger;
+            // 校验是否有图片下载
+            var hasPic = false;
+            for (var pi in models) {
+                if (models[pi]) {
+                    hasPic = true;
+                    break;
                 }
-
-                var topicId = rows.insertId;
-                for (var i in models) {
-                    var picture = models[i];
-                    if (!picture) {
-                        continue;
+            }
+            
+            // 有的话，插入数据库
+            if (hasPic) {
+                // 将帖子信息插入数据
+                model.topics.insert(topicModel, function (err, rows) {
+                    if (err) {
+                        console.error('topic insert ' + err);
+                        return;
                     }
-                    picture['topicId'] = topicId;
 
-                    model.pictures.insert(picture, function (err, rows) {
-                        if (err) {
-                            console.error('picture insert ' + err);
-                            return;
+                    var topicId = rows.insertId;
+                    for (var i in models) {
+                        var picture = models[i];
+                        if (!picture) {
+                            continue;
                         }
+                        picture['topicId'] = topicId;
 
-                        if (!rows.insertId) {
-                            console.log('picture insert faild !' + JSON.stringify(picture))
-                        }
-                    });
-                }
-            });
+                        model.pictures.insert(picture, function (err, rows) {
+                            if (err) {
+                                console.error('picture insert ' + err);
+                                return;
+                            }
+
+                            if (!rows.insertId) {
+                                console.log('picture insert faild !' + JSON.stringify(picture))
+                            }
+                        });
+                    }
+                });
+            }
 
             if (callback) {
                 callback();
@@ -270,8 +281,7 @@ var queue = async.queue(function (task, callback) {
 
                     delete reqArgs.refer;
                     ep.emit('picture_' + _topicId, reqArgs);
-                }
-                else {
+                } else {
                     ep.emit('picture_' + _topicId)
                 }
             });
@@ -322,7 +332,8 @@ utils.timer(function () {
                 return false;
             }
 
-            console.log("topics:" + topics.length);
+            console.log('topics:' + topics.length);
+            console.log('groupPageUrls:' + groupPageUrls.length);
         });
     });
 });
